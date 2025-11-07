@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rain Prediction App</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px 45px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            width: 420px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input, select {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .prediction {
+            margin-top: 25px;
+            font-size: 18px;
+        }
+
+        .progress-container {
+            margin-top: 15px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 20px;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #00FF88;
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        .confidence-text {
+            margin-top: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>🌦️ Rainfall Prediction</h2>
+
+    <form action="/predict" method="POST">
+        <input type="number" step="any" name="Sunshine" placeholder="Sunshine (hours)" required><br>
+        <input type="number" step="any" name="WindGustSpeed" placeholder="Wind Gust Speed (km/h)" required><br>
+        <input type="number" step="any" name="Humidity9am" placeholder="Humidity at 9am (%)" required><br>
+        <input type="number" step="any" name="Humidity3pm" placeholder="Humidity at 3pm (%)" required><br>
+        <input type="number" step="any" name="Pressure9am" placeholder="Pressure at 9am (hPa)" required><br>
+        <input type="number" step="any" name="Cloud9am" placeholder="Cloud at 9am (oktas)" required><br>
+        <input type="number" step="any" name="Cloud3pm" placeholder="Cloud at 3pm (oktas)" required><br>
+        <input type="number" step="any" name="Temp3pm" placeholder="Temperature at 3pm (°C)" required><br>
+        <select name="RainToday" required>
+            <option value="">Did it rain today?</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction_text %}
+        <div class="prediction">{{ prediction_text }}</div>
+    {% endif %}
+
+    {% if confidence is not none %}
+        <div class="confidence-text">Confidence: {{ confidence }}%</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <script>
+            const progressBar = document.getElementById("progress-bar");
+            const confidence = {{ confidence }};
+            progressBar.style.width = confidence + "%";
+
+            // Change bar color based on confidence
+            if (confidence >= 75) {
+                progressBar.style.backgroundColor = "#00FF88"; // green
+            } else if (confidence >= 50) {
+                progressBar.style.backgroundColor = "#FFD700"; // yellow
+            } else {
+                progressBar.style.backgroundColor = "#FF6347"; // red
+            }
+        </script>
+    {% endif %}
+</div>
+</body>
+</html>
